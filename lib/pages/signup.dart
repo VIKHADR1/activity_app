@@ -20,28 +20,53 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF0F4F8),
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Sign Up',
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Text(
+                "Create Your Account",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.brown,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Please fill in the details to continue",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 32),
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
                   filled: true,
                   fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: const Icon(Icons.person, color: Colors.brown),
                 ),
-                style: TextStyle(color: Colors.brown), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
@@ -54,14 +79,14 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
                   filled: true,
                   fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.email),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: const Icon(Icons.email, color: Colors.brown),
                 ),
-                style: TextStyle(color: Colors.brown), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -74,15 +99,15 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
                   filled: true,
                   fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.brown),
                 ),
                 obscureText: true,
-                style: TextStyle(color: Colors.brown), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
@@ -90,10 +115,10 @@ class _SignupPageState extends State<SignupPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 20),
               SizedBox(
-                width: 300,
-                height: 45,
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -113,7 +138,13 @@ class _SignupPageState extends State<SignupPage> {
                           // Save user data to Firestore
                           await saveUserDataToFirestore(user.uid);
                         }
+
+                        // Navigate to login page after successful signup
                         Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Account created successfully!')),
+                        );
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -139,14 +170,27 @@ class _SignupPageState extends State<SignupPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.brown, // Custom button color
-                    elevation: 5, // Add elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
+                    elevation: 5, // Add elevation
                   ),
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24.0),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Already have an account? Log in',
+                  style: TextStyle(
+                    color: Colors.brown,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),

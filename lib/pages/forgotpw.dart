@@ -17,48 +17,71 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: const Color(0xFFF0F4F8),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Forgot Password',
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: Image.asset(
-                  'assets/images/caffeinate.png',
-                  height: 250,
-                  width: 250,
-                ),
+            const Text(
+              "Reset Your Password",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown,
               ),
             ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                filled: true,
-                fillColor: Colors.white,
+            const SizedBox(height: 8),
+            const Text(
+              "Enter your email address to receive a password reset link.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 32),
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: const Icon(Icons.email, color: Colors.brown),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
             SizedBox(
-              width: 300,
-              height: 45,
+              width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
                       await FirebaseAuth.instance.sendPasswordResetEmail(
-                        email: _emailController.text,
+                        email: _emailController.text.trim(),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -79,19 +102,31 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown, // Custom button color
-                  elevation: 5, // Add elevation
+                  backgroundColor: Colors.brown,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
+                  elevation: 5,
                 ),
                 child: const Text(
-                  'Sent',
+                  'Send Reset Link',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            const SizedBox(height: 150.0), // Add margin of 150 to the bottom
+            const SizedBox(height: 24.0),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Back to Login',
+                style: TextStyle(
+                  color: Colors.brown,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
           ],
         ),
       ),
