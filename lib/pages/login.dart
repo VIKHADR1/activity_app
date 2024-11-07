@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
 import 'package:activity_app/pages/admin.dart';
 import 'package:activity_app/pages/forgotpw.dart';
@@ -21,66 +21,70 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF0F4F8),
       appBar: AppBar(
-          // Custom color for app bar
-          ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Login',
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: Image.asset(
-                  'assets/images/caffeinate.png',
-                  height: 250,
-                  width: 250,
-                ),
+            const Text(
+              "Welcome Back!",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown,
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 8),
+            const Text(
+              "Please log in to continue",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 32),
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
                 filled: true,
                 fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
+                ),
               ),
-              style: TextStyle(color: Colors.brown), // Custom text color
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
+              style: const TextStyle(color: Colors.brown),
             ),
             const SizedBox(height: 16.0),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
                 filled: true,
                 fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
+                ),
               ),
               obscureText: true,
-              style: TextStyle(color: Colors.brown), // Custom text color
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
+              style: const TextStyle(color: Colors.brown),
             ),
             const SizedBox(height: 16.0),
             SizedBox(
-              width: 300,
-              height: 45,
+              width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   final email = _emailController.text.trim();
@@ -98,13 +102,14 @@ class _LoginPageState extends State<LoginPage> {
                       if (user!.email == 'asd@gmail.com') {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => AdminPanel()),
+                          MaterialPageRoute(
+                              builder: (context) => const AdminPanel()),
                         );
                       } else {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => UserHomePage()),
+                              builder: (context) => const UserHomePage()),
                         );
                       }
                     } on FirebaseAuthException catch (e) {
@@ -121,33 +126,43 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown, // Custom button color
-                  elevation: 5, // Add elevation
+                  backgroundColor: Colors.brown,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
+                  elevation: 5,
                 ),
                 child: const Text(
                   'Login',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
             const SizedBox(height: 16.0),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignupPage()),
-                );
-              },
-              child: const Text(
-                'Don\'t have an account?',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 11, 102, 176),
-                  decoration: TextDecoration.underline,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Don't have an account?",
+                  style: TextStyle(color: Colors.grey),
                 ),
-              ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignupPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.brown,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
             TextButton(
               onPressed: () {
@@ -160,12 +175,11 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text(
                 'Forgot Password?',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 11, 102, 176),
+                  color: Colors.brown,
                   decoration: TextDecoration.underline,
                 ),
               ),
             ),
-            SizedBox(height: 50.0), // Add margin of 50 to the bottom
           ],
         ),
       ),
