@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:activity_app/pages/admin.dart';
 import 'package:activity_app/pages/forgotpw.dart';
@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 32),
+            // Email TextFormField with Icon
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -63,10 +64,12 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none,
                 ),
+                prefixIcon: const Icon(Icons.email, color: Colors.brown),
               ),
               style: const TextStyle(color: Colors.brown),
             ),
             const SizedBox(height: 16.0),
+            // Password TextFormField with Icon
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
@@ -77,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none,
                 ),
+                prefixIcon: const Icon(Icons.lock, color: Colors.brown),
               ),
               obscureText: true,
               style: const TextStyle(color: Colors.brown),
