@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:activity_app/pages/events/event_list.dart';
 import 'package:activity_app/firebase_options.dart';
 import 'package:activity_app/pages/admin.dart';
 import 'package:activity_app/pages/home.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: const EventList(),
       routes: {
         '/home': (context) => const UserHomePage(),
         '/adminpanel': (context) => const AdminPanel(),
