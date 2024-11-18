@@ -1,62 +1,94 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:activity_app/pages/aboutUs.dart';
+import 'package:activity_app/pages/authentication/login.dart';
+import 'package:activity_app/pages/caldendar.dart';
+import 'package:activity_app/pages/events/event_list.dart';
+import 'package:activity_app/pages/favourite.dart';
+import 'package:activity_app/pages/feedback.dart';
+import 'package:activity_app/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:activity_app/pages/events/event_list.dart';
-import 'package:activity_app/pages/caldendar.dart';
-import 'package:activity_app/pages/favourite.dart';
-import 'package:activity_app/service/database.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   int notificationCount = 0;
+  String? username;
+  String? email;
+  // String? profilePictureUrl;
+
   final List<String> categories = [
-    'Academic',
-    'Sports & Recreation',
-    'Arts & Culture',
-    'Networking & Career Development',
-    'Community Outreach',
-    'Health & Wellness',
-    'Technology & Innovation',
-    'Sustainability & Environment',
-    'Social & Entertainment'
+    'Sport',
+    'Conference',
+    'Workshop',
+    'Environment & Sustainable Activity',
+    'Club Activity',
+    'Social & Recreational Activity'
   ];
   final List<String> messages = [
-    "ahfajkfajfka",
-    "kjhashaklfj",
-    "kjhfKLFHKLASF",
-    "jkhaksljhgkla"
+    "Message 1",
+    "Message 2",
+    "Message 3",
+    "Message 4"
   ];
 
   @override
   void initState() {
     super.initState();
-    // Fetch favorite events count
+    _getUserData();
     _getFavoriteEventsCount();
   }
 
-  void _getFavoriteEventsCount() async {
+  // Inside the _HomePageState class
+  void _getUserData() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
-    if (userId.isEmpty) {
-      setState(() {
-        notificationCount = 0; // Set to 0 if no user is logged in
-      });
-      return; // Exit the function early
-    }
-    // Fetch the user's data from Firestore
     DocumentSnapshot userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     if (userDoc.exists) {
-      // Check if the 'isFavourite' field exists and is a map
+      setState(() {
+        username = userDoc['username'] ?? "John Doe";
+        email = userDoc['email'] ?? "john.doe@example.com";
+        // profilePictureUrl = userDoc['profile']; // If you want to include the profile picture URL
+      });
+    } else {
+      setState(() {
+        username = "John Doe"; // Default username if no data found
+        email = "john.doe@example.com"; // Default email
+      });
+    }
+  }
+
+  void _updateUsername(String newUsername) async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+    // Update the username in Firestore
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'username': newUsername,
+    });
+
+    // Now, update the local state to reflect the change
+    setState(() {
+      username = newUsername;
+    });
+
+    _getUserData();
+  }
+
+  // Get count of favorite events from Firestore
+  void _getFavoriteEventsCount() async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (userDoc.exists) {
       var favoriteMap = userDoc['isFavourite'];
 
       if (favoriteMap is Map) {
@@ -68,17 +100,16 @@ class _HomePageState extends State<HomePage> {
         });
 
         setState(() {
-          notificationCount =
-              count; // Update notification count based on the number of 'true' values
+          notificationCount = count;
         });
       } else {
         setState(() {
-          notificationCount = 0; // Set to 0 if 'isFavourite' is not a map
+          notificationCount = 0;
         });
       }
     } else {
       setState(() {
-        notificationCount = 0; // Set to 0 if user document does not exist
+        notificationCount = 0;
       });
     }
   }
@@ -90,8 +121,7 @@ class _HomePageState extends State<HomePage> {
     if (index == 2) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => Calendar()), // Navigate to Calendar page
+        MaterialPageRoute(builder: (context) => Calendar()),
       );
     } else if (index == 1) {
       Navigator.pushReplacement(
@@ -130,11 +160,10 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Favourite(
-                                userId:
-                                    FirebaseAuth.instance.currentUser?.uid ??
-                                        "",
-                              )),
+                        builder: (context) => Favourite(
+                          userId: FirebaseAuth.instance.currentUser?.uid ?? "",
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -172,15 +201,20 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text('John Doe'),
-              accountEmail: Text('john.doe@example.com'),
+              accountName: Text(username ??
+                  "Loading..."), // Shows 'Loading...' while fetching
+              accountEmail: Text(
+                  email ?? "Loading..."), // Shows 'Loading...' while fetching
               currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text(
-                  'JD',
-                  style: TextStyle(fontSize: 40.0, color: Colors.blue),
-                ),
-              ),
+                  backgroundColor: Colors.white,
+                  child: Text(
+                    username != null && username!.isNotEmpty
+                        ? username![0].toUpperCase() // First letter of username
+                        : 'U', // Default placeholder
+                    style: TextStyle(fontSize: 40.0, color: Colors.blue),
+                  )
+                  // Fallback if no profile picture
+                  ),
             ),
             ListTile(
               title: Text("Profile"),
@@ -193,14 +227,15 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              title: Text("About Us"),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("About Us clicked")),
-                );
-                Navigator.pop(context);
-              },
-            ),
+                title: Text("About Us"),
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("About Us clicked")),
+                  );
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AboutUsPage()));
+                }),
             ListTile(
               title: Text("Feedback"),
               onTap: () {
@@ -208,146 +243,128 @@ class _HomePageState extends State<HomePage> {
                   SnackBar(content: Text("Feedback clicked")),
                 );
                 Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => FeedbackPage()));
+              },
+            ),
+            ListTile(
+              title: Text("Logout"),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("You have logged out the account!!")),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
               },
             ),
           ],
         ),
       ),
-      body: ListView(
-        padding: EdgeInsets.all(0),
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: SizedBox(
-              height: 40.0,
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    borderSide: BorderSide.none,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: SizedBox(
+                height: 40.0,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    contentPadding: EdgeInsets.only(top: 12.0),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  contentPadding: EdgeInsets.only(top: 12.0),
                 ),
               ),
             ),
-          ),
-          CarouselSlider(
-            options: CarouselOptions(
-              height: 200,
-              autoPlay: true,
-              enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
-            ),
-            items: messages.map((message) {
-              return Container(
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: Text(
-                  message,
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 50),
-          Text(
-            'Select a Category:',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 20),
-          Wrap(
-            spacing: 10.0,
-            runSpacing: 10.0,
-            children: categories.map((category) {
-              return GestureDetector(
-                onTap: () {
-                  // Navigate to EventList page when a category is tapped
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EventList()),
-                  );
-                },
-                child: Container(
-                  width: (MediaQuery.of(context).size.width / 3) - 15,
-                  height: 100,
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 200,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 16 / 9,
+              ),
+              items: messages.map((message) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
-                    category,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                    textAlign: TextAlign.center,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      message,
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 50),
+            Text(
+              'Select a Category:',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 20),
+            Wrap(
+              spacing: 10.0,
+              runSpacing: 10.0,
+              children: categories.map((category) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EventList()),
+                    );
+                  },
+                  child: Container(
+                    width: (MediaQuery.of(context).size.width / 3) - 15,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      category,
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: 'Favorites',
+            label: 'Favorite',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
           ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
-// Profile Page
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Profile Page"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage('https://via.placeholder.com/150'),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              "Username",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8.0),
-            Text("email@example.com"),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Edit Profile clicked")),
-                );
-              },
-              child: Text("Edit Profile"),
-            ),
-          ],
-        ),
       ),
     );
   }

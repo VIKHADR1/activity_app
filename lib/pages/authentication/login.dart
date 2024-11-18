@@ -101,11 +101,10 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(builder: (context) => AdminPanel()),
                         );
                       } else {
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => UserHomePage()),
-                        // );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
                       }
                     } on FirebaseAuthException catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
