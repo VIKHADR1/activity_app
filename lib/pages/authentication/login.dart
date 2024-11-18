@@ -1,9 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_print
 
 import 'package:activity_app/pages/admin.dart';
-import 'package:activity_app/pages/forgotpw.dart';
+import 'package:activity_app/pages/authentication/forgotpw.dart';
 import 'package:activity_app/pages/home.dart';
-import 'package:activity_app/pages/signup.dart';
+import 'package:activity_app/pages/authentication/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -101,11 +101,11 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(builder: (context) => AdminPanel()),
                         );
                       } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserHomePage()),
-                        );
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => UserHomePage()),
+                        // );
                       }
                     } on FirebaseAuthException catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(

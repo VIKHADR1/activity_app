@@ -4,7 +4,7 @@ import 'package:activity_app/pages/events/event_list.dart';
 import 'package:activity_app/firebase_options.dart';
 import 'package:activity_app/pages/admin.dart';
 import 'package:activity_app/pages/home.dart';
-import 'package:activity_app/pages/login.dart';
+import 'package:activity_app/pages/authentication/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const EventList(),
       routes: {
-        '/home': (context) => const UserHomePage(),
+        // '/home': (context) => const UserHomePage(),
         '/adminpanel': (context) => const AdminPanel(),
       },
     );
