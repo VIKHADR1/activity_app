@@ -17,12 +17,15 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   int notificationCount = 0;
   final List<String> categories = [
-    'Sport',
-    'Conference',
-    'Workshop',
-    'Environment & Sustainable Activity',
-    'Club Activity',
-    'Social & Recreational Activity'
+    'Academic',
+    'Sports & Recreation',
+    'Arts & Culture',
+    'Networking & Career Development',
+    'Community Outreach',
+    'Health & Wellness',
+    'Technology & Innovation',
+    'Sustainability & Environment',
+    'Social & Entertainment'
   ];
   final List<String> messages = [
     "ahfajkfajfka",
