@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:activity_app/pages/events/event_list.dart';
 import 'package:activity_app/pages/caldendar.dart';
 import 'package:activity_app/pages/favourite.dart';
+import 'package:activity_app/service/database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,6 +45,12 @@ class _HomePageState extends State<HomePage> {
   void _getFavoriteEventsCount() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
+    if (userId.isEmpty) {
+      setState(() {
+        notificationCount = 0; // Set to 0 if no user is logged in
+      });
+      return; // Exit the function early
+    }
     // Fetch the user's data from Firestore
     DocumentSnapshot userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -206,7 +213,8 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Column(
+      body: ListView(
+        padding: EdgeInsets.all(0),
         children: [
           Padding(
             padding:
