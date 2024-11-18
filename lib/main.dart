@@ -2,6 +2,7 @@
 
 import 'package:activity_app/firebase_options.dart';
 import 'package:activity_app/pages/admin.dart';
+import 'package:activity_app/pages/authentication/login.dart';
 import 'package:activity_app/pages/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: LoginPage(),
       routes: {
         '/home': (context) => HomePage(),
         '/adminpanel': (context) => const AdminPanel(),
