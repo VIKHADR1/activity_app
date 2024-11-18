@@ -1,6 +1,7 @@
 import 'package:activity_app/pages/aboutUs.dart';
 import 'package:activity_app/pages/authentication/login.dart';
 import 'package:activity_app/pages/caldendar.dart';
+import 'package:activity_app/pages/colors.dart';
 import 'package:activity_app/pages/events/event_list.dart';
 import 'package:activity_app/pages/favourite.dart';
 import 'package:activity_app/pages/feedback.dart';
@@ -20,7 +21,6 @@ class _HomePageState extends State<HomePage> {
   int notificationCount = 0;
   String? username;
   String? email;
-  // String? profilePictureUrl;
 
   final List<String> categories = [
     'Sport',
@@ -44,7 +44,6 @@ class _HomePageState extends State<HomePage> {
     _getFavoriteEventsCount();
   }
 
-  // Inside the _HomePageState class
   void _getUserData() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
@@ -53,9 +52,8 @@ class _HomePageState extends State<HomePage> {
 
     if (userDoc.exists) {
       setState(() {
-        username = userDoc['username'] ?? "John Doe";
-        email = userDoc['email'] ?? "john.doe@example.com";
-        // profilePictureUrl = userDoc['profile']; // If you want to include the profile picture URL
+        username = userDoc.get('username') ?? "John Doe";
+        email = userDoc.get('email') ?? "john.doe@example.com";
       });
     } else {
       setState(() {
@@ -65,23 +63,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _updateUsername(String newUsername) async {
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
-
-    // Update the username in Firestore
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'username': newUsername,
-    });
-
-    // Now, update the local state to reflect the change
-    setState(() {
-      username = newUsername;
-    });
-
-    _getUserData();
-  }
-
-  // Get count of favorite events from Firestore
   void _getFavoriteEventsCount() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
@@ -139,11 +120,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text('Home Page'),
+        backgroundColor: AppColors.primaryColor, // Updated to match LoginPage
+        title: Text(
+          'Home Page',
+          style: TextStyle(
+            fontSize: 20,
+            color: AppColors.textPrimaryColor, // Updated text color
+          ),
+        ),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.menu, color: AppColors.textPrimaryColor),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -155,7 +142,8 @@ class _HomePageState extends State<HomePage> {
             child: Stack(
               children: [
                 IconButton(
-                  icon: Icon(Icons.notifications),
+                  icon: Icon(Icons.notifications,
+                      color: AppColors.textPrimaryColor),
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
@@ -201,23 +189,22 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(username ??
-                  "Loading..."), // Shows 'Loading...' while fetching
-              accountEmail: Text(
-                  email ?? "Loading..."), // Shows 'Loading...' while fetching
+              accountName: Text(username ?? "Loading..."),
+              accountEmail: Text(email ?? "Loading..."),
               currentAccountPicture: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    username != null && username!.isNotEmpty
-                        ? username![0].toUpperCase() // First letter of username
-                        : 'U', // Default placeholder
-                    style: TextStyle(fontSize: 40.0, color: Colors.blue),
-                  )
-                  // Fallback if no profile picture
-                  ),
+                backgroundColor: Colors.white,
+                child: Text(
+                  username != null && username!.isNotEmpty
+                      ? username![0].toUpperCase()
+                      : 'U',
+                  style:
+                      TextStyle(fontSize: 40.0, color: AppColors.primaryColor),
+                ),
+              ),
             ),
             ListTile(
-              title: Text("Profile"),
+              title: Text("Profile",
+                  style: TextStyle(color: AppColors.textPrimaryColor)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -227,32 +214,31 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-                title: Text("About Us"),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("About Us clicked")),
-                  );
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AboutUsPage()));
-                }),
-            ListTile(
-              title: Text("Feedback"),
+              title: Text("About Us",
+                  style: TextStyle(color: AppColors.textPrimaryColor)),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Feedback clicked")),
-                );
                 Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => FeedbackPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUsPage()),
+                );
               },
             ),
             ListTile(
-              title: Text("Logout"),
+              title: Text("Feedback",
+                  style: TextStyle(color: AppColors.textPrimaryColor)),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("You have logged out the account!!")),
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeedbackPage()),
                 );
+              },
+            ),
+            ListTile(
+              title: Text("Logout",
+                  style: TextStyle(color: AppColors.textPrimaryColor)),
+              onTap: () {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
@@ -273,13 +259,14 @@ class _HomePageState extends State<HomePage> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon:
+                        Icon(Icons.search, color: AppColors.textSecondaryColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
                       borderSide: BorderSide.none,
                     ),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: AppColors.secondaryColor, // Matching fill color
                     contentPadding: EdgeInsets.only(top: 12.0),
                   ),
                 ),
@@ -296,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                 return Container(
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.primaryColor, // Matching primary color
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   alignment: Alignment.center,
@@ -314,7 +301,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 50),
             Text(
               'Select a Category:',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: AppColors.textPrimaryColor),
             ),
             SizedBox(height: 20),
             Wrap(
@@ -332,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                     width: (MediaQuery.of(context).size.width / 3) - 15,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.blueAccent,
+                      color: AppColors.primaryColor, // Matching primary color
                       borderRadius: BorderRadius.circular(15),
                     ),
                     alignment: Alignment.center,
@@ -351,20 +338,23 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: 'Favorite',
+            label: 'Favorites',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
           ),
         ],
+        selectedItemColor: AppColors.primaryColor,
+        unselectedItemColor: AppColors.textSecondaryColor,
+        backgroundColor: AppColors.secondaryColor,
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart'; // To handle image picking
+import 'dart:io'; // To handle file operations
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -11,9 +12,22 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _usernameController = TextEditingController();
   File? _profileImage;
-  bool isLoading = false;
+  bool _isLoading = false;
 
-  // To save the profile updates
+  // Pick an image from the gallery
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Save profile data (username and profile image)
   void _saveProfile() async {
     if (_usernameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -23,32 +37,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
 
     try {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
-      // Save username and profile picture URL to Firestore
+      // Save username to Firestore
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'username': _usernameController.text,
-        // If a profile image is selected, upload it (implement image upload logic if required)
+        // Profile image uploading logic could be added here using Firebase Storage
       });
 
-      // For simplicity, assuming no image upload logic here
-      // To update the profile picture, use Firebase Storage (if necessary)
-
-      setState(() {
-        isLoading = false;
-      });
-
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Profile updated successfully")),
+        SnackBar(content: Text("Profile updated successfully!")),
       );
       Navigator.pop(context);
     } catch (e) {
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating profile: $e")),
@@ -64,7 +72,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         title: Text("Edit Profile"),
         centerTitle: true,
       ),
-      body: isLoading
+      body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
@@ -73,6 +81,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   // Profile image
                   GestureDetector(
+                    onTap: _pickImage,
                     child: CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.grey[300],

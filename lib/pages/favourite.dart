@@ -2,6 +2,7 @@ import 'package:activity_app/pages/caldendar.dart';
 import 'package:activity_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:activity_app/pages/colors.dart'; // Ensure you import your colors file
 
 class Favourite extends StatefulWidget {
   final String userId;
@@ -84,17 +85,24 @@ class _FavouriteState extends State<Favourite> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Favorites"),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: AppColors.primaryColor, // Use primary color
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
+        // Displaying favorite events
         future: fetchFavoriteEvents(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+                child:
+                    CircularProgressIndicator(color: AppColors.accentColor1));
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error fetching data"));
+            return Center(
+                child: Text("Error fetching data",
+                    style: TextStyle(color: AppColors.textPrimaryColor)));
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-            return Center(child: Text("No favorite events"));
+            return Center(
+                child: Text("No favorite events",
+                    style: TextStyle(color: AppColors.textPrimaryColor)));
           } else {
             final favoriteEvents = snapshot.data!;
             return ListView.builder(
@@ -108,16 +116,17 @@ class _FavouriteState extends State<Favourite> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   margin: EdgeInsets.symmetric(vertical: 10),
+                  color: AppColors.secondaryColor, // Card background color
                   child: ListTile(
                     contentPadding: EdgeInsets.all(15),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    // Removed the leading image
                     title: Text(
                       event['Name'],
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color:
+                            AppColors.textPrimaryColor, // Text color for title
                       ),
                     ),
                     subtitle: Column(
@@ -128,18 +137,23 @@ class _FavouriteState extends State<Favourite> {
                           event['Description'],
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(
+                              color: AppColors
+                                  .textSecondaryColor), // Secondary text color
                         ),
                         SizedBox(height: 5),
                         Text(
                           "Contact Info: ${event['Contact Info']}",
-                          style: TextStyle(color: Colors.blueAccent),
+                          style: TextStyle(
+                              color: AppColors
+                                  .accentColor2), // Accent color for contact info
                         ),
                       ],
                     ),
                     trailing: Icon(
                       Icons.favorite,
-                      color: Colors.red,
+                      color: AppColors
+                          .accentColor2, // Accent color for favorite icon
                     ),
                   ),
                 );
@@ -149,6 +163,11 @@ class _FavouriteState extends State<Favourite> {
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor:
+            AppColors.secondaryColor, // Background color of the bottom nav bar
+        selectedItemColor: AppColors.primaryColor, // Active item color
+        unselectedItemColor:
+            AppColors.textSecondaryColor, // Inactive item color
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

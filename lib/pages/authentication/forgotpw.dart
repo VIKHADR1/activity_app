@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../colors.dart'; // Import your color palette file
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -15,37 +16,38 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor, // Dark blue-green app bar
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: Image.asset(
-                  'assets/images/caffeinate.png',
-                  height: 250,
-                  width: 250,
-                ),
+            // Removed image, aligned to match the login page
+            Text(
+              'Forgot Password',
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.textPrimaryColor, // White text
+                fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 32.0),
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Email',
+                hintText: 'Enter your email', // Simple placeholder text
+                hintStyle: TextStyle(
+                    color: AppColors.textSecondaryColor), // Placeholder color
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppColors.secondaryColor, // Light aqua for fill
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
+              style: TextStyle(color: AppColors.textPrimaryColor), // White text
+              keyboardType: TextInputType.emailAddress, // Email keyboard
             ),
             const SizedBox(height: 16.0),
             SizedBox(
@@ -77,19 +79,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown, // Custom button color
+                  backgroundColor:
+                      AppColors.primaryColor, // Earthy green button color
                   elevation: 5, // Add elevation
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
                 child: const Text(
-                  'Sent',
+                  'Send Reset Link',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            const SizedBox(height: 150.0), // Add margin of 150 to the bottom
+            const SizedBox(height: 150.0), // Add margin to the bottom
           ],
         ),
       ),

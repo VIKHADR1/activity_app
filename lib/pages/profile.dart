@@ -2,6 +2,7 @@ import 'package:activity_app/pages/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:activity_app/pages/colors.dart'; // Make sure this import is included
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -45,17 +46,23 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor:
+            AppColors.primaryColor, // Use primary color from AppColors
         title: Text(
           "Profile",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color:
+                AppColors.textPrimaryColor, // Text color for the AppBar title
+          ),
         ),
         centerTitle: true,
       ),
       body: isLoading
           ? Center(
               child: CircularProgressIndicator(
-                color: Colors.teal,
+                color: AppColors
+                    .primaryColor, // Match the loading spinner with the primary color
               ),
             )
           : Center(
@@ -72,7 +79,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color:
+                          AppColors.textPrimaryColor, // Use primary text color
                     ),
                   ),
                   SizedBox(height: 8.0),
@@ -80,7 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     email ?? "Loading...",
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: AppColors
+                          .textSecondaryColor, // Use secondary text color
                     ),
                   ),
                   SizedBox(height: 30.0),
@@ -93,7 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: AppColors
+                          .accentColor1, // Use accent color for button background
                       foregroundColor: Colors.white,
                       padding:
                           EdgeInsets.symmetric(vertical: 12, horizontal: 30),
@@ -103,7 +113,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Text(
                       "Edit Profile",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

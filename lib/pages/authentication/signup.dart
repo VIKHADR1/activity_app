@@ -1,8 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../colors.dart'; // Import your color palette
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -21,6 +20,7 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.primaryColor, // Use primary color
         title: const Text('Sign Up'),
       ),
       body: Padding(
@@ -28,20 +28,22 @@ class _SignupPageState extends State<SignupPage> {
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center, // Center everything
             children: [
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  hintText: 'Enter your username', // Simple placeholder text
+                  hintStyle: TextStyle(
+                      color: AppColors.textSecondaryColor), // Placeholder color
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.person),
+                  fillColor: AppColors.secondaryColor, // Fill color
                 ),
-                style: TextStyle(color: Colors.brown), // Custom text color
+                style: TextStyle(
+                    color: AppColors.textPrimaryColor), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
@@ -53,15 +55,17 @@ class _SignupPageState extends State<SignupPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  hintText: 'Enter your email', // Simple placeholder text
+                  hintStyle: TextStyle(
+                      color: AppColors.textSecondaryColor), // Placeholder color
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.email),
+                  fillColor: AppColors.secondaryColor, // Fill color
                 ),
-                style: TextStyle(color: Colors.brown), // Custom text color
+                style: TextStyle(
+                    color: AppColors.textPrimaryColor), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -73,16 +77,18 @@ class _SignupPageState extends State<SignupPage> {
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  hintText: 'Enter your password', // Simple placeholder text
+                  hintStyle: TextStyle(
+                      color: AppColors.textSecondaryColor), // Placeholder color
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: Icon(Icons.lock),
+                  fillColor: AppColors.secondaryColor, // Fill color
                 ),
                 obscureText: true,
-                style: TextStyle(color: Colors.brown), // Custom text color
+                style: TextStyle(
+                    color: AppColors.textPrimaryColor), // Custom text color
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
@@ -138,7 +144,8 @@ class _SignupPageState extends State<SignupPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown, // Custom button color
+                    backgroundColor:
+                        AppColors.primaryColor, // Custom button color
                     elevation: 5, // Add elevation
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),

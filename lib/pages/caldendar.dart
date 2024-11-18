@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:activity_app/pages/favourite.dart';
 import 'package:activity_app/pages/home.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:activity_app/pages/colors.dart'; // Import your color file
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -42,6 +43,7 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Calendar"),
+        backgroundColor: AppColors.primaryColor, // Use primary color for AppBar
       ),
       body: Column(
         children: [
@@ -57,24 +59,43 @@ class _CalendarState extends State<Calendar> {
             },
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Colors.blueAccent,
+                color: AppColors.accentColor1, // Accent color for today's date
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
-                color: Colors.redAccent,
+                color: AppColors.accentColor2, // Accent color for selected date
                 shape: BoxShape.circle,
               ),
+              outsideDaysVisible:
+                  false, // Hide the days from the previous/next month
+            ),
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false, // Hide format button
+              titleCentered: true, // Center the title
+              leftChevronIcon:
+                  Icon(Icons.arrow_left, color: AppColors.primaryColor),
+              rightChevronIcon:
+                  Icon(Icons.arrow_right, color: AppColors.primaryColor),
             ),
           ),
           SizedBox(height: 20),
           Text(
             'Selected Date: ${_selectedDay.toLocal()}'.split(' ')[0],
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimaryColor, // Use primary text color
+            ),
           ),
           SizedBox(height: 20),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor:
+            AppColors.secondaryColor, // Bottom navigation bar background
+        selectedItemColor: AppColors.primaryColor, // Active item color
+        unselectedItemColor:
+            AppColors.textSecondaryColor, // Inactive item color
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
