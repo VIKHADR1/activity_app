@@ -1,0 +1,99 @@
+[
+    {
+      "ID": "21563749281",
+      "Name": "AI and Robotics Workshop",
+      "Category": "Technology & Innovation",
+      "Description": "Learn the basics of AI and robotics through hands-on activities and expert guidance. Ideal for tech enthusiasts of all levels.",
+      "Contact Info": "aiworkshop@example.com",
+      "createdAt": "2024-11-25T10:00:00Z"
+    },
+    {
+      "ID": "21563749282",
+      "Name": "Urban Gardening 101",
+      "Category": "Sustainability & Environment",
+      "Description": "Discover the joys of urban gardening and sustainable living. Perfect for beginners and plant lovers.",
+      "Contact Info": "gardening101@example.com",
+      "createdAt": "2024-12-01T15:00:00Z"
+    },
+    {
+      "ID": "21563749283",
+      "Name": "Mindful Meditation Retreat",
+      "Category": "Health & Wellness",
+      "Description": "Relax and recharge at our guided meditation retreat designed to promote mental clarity and inner peace.",
+      "Contact Info": "meditation@example.com",
+      "createdAt": "2024-12-03T08:30:00Z"
+    },
+    {
+      "ID": "21563749284",
+      "Name": "Community Cleanup Drive",
+      "Category": "Community Outreach",
+      "Description": "Join hands to clean up local parks and neighborhoods, fostering a healthier and greener community.",
+      "Contact Info": "cleanup@example.com",
+      "createdAt": "2024-11-30T09:00:00Z"
+    },
+    {
+      "ID": "21563749285",
+      "Name": "Networking for Creatives",
+      "Category": "Networking & Career Development",
+      "Description": "Connect with other creatives, share ideas, and explore collaboration opportunities in the arts industry.",
+      "Contact Info": "creativenetwork@example.com",
+      "createdAt": "2024-11-28T17:00:00Z"
+    },
+    {
+      "ID": "21563749286",
+      "Name": "Photography Basics Workshop",
+      "Category": "Arts & Culture",
+      "Description": "A beginner-friendly workshop on photography techniques and creative expression through the lens.",
+      "Contact Info": "photoworkshop@example.com",
+      "createdAt": "2024-12-05T14:00:00Z"
+    },
+    {
+      "ID": "21563749287",
+      "Name": "College Entrance Prep Seminar",
+      "Category": "Academic",
+      "Description": "Expert tips and resources to help students prepare for college entrance exams and applications.",
+      "Contact Info": "collegeprep@example.com",
+      "createdAt": "2024-11-27T18:00:00Z"
+    },
+    {
+      "ID": "21563749288",
+      "Name": "Local Music Night",
+      "Category": "Social & Entertainment",
+      "Description": "Enjoy live performances by local bands and artists in a vibrant social atmosphere.",
+      "Contact Info": "musicnight@example.com",
+      "createdAt": "2024-11-29T19:00:00Z"
+    },
+    {
+      "ID": "21563749289",
+      "Name": "Tech Innovators Meetup",
+      "Category": "Technology & Innovation",
+      "Description": "A platform for tech innovators and enthusiasts to showcase their ideas and learn from industry leaders.",
+      "Contact Info": "techmeetup@example.com",
+      "createdAt": "2024-12-02T16:00:00Z"
+    },
+    {
+      "ID": "21563749290",
+      "Name": "Inclusive Sports Day",
+      "Category": "Sports & Recreation",
+      "Description": "A fun-filled day of inclusive sports activities designed to promote teamwork and fitness for all.",
+      "Contact Info": "sportsday@example.com",
+      "createdAt": "2024-12-06T10:00:00Z"
+    },
+    {
+      "ID": "21563749291",
+      "Name": "Recycled Art Exhibition",
+      "Category": "Sustainability & Environment",
+      "Description": "An exhibition showcasing stunning art pieces created from recycled materials by local artists.",
+      "Contact Info": "recycledart@example.com",
+      "createdAt": "2024-12-04T13:00:00Z"
+    },
+    {
+      "ID": "21563749292",
+      "Name": "Young Entrepreneurs Conference",
+      "Category": "Networking & Career Development",
+      "Description": "A conference designed to inspire and connect young entrepreneurs with mentors and resources.",
+      "Contact Info": "entrepreneurs@example.com",
+      "createdAt": "2024-12-08T09:00:00Z"
+    }
+  ]
+  

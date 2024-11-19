@@ -294,11 +294,25 @@ class _HomePageState extends State<HomePage> {
             buildSearchBar(), // Search bar
             buildCarousel(eventDocs), // Carousel Slider
             SizedBox(height: 10),
-            buildCategoryGrid(),
+            buildCategoryGrid(), // Category Grid
 
+            // Show "No events found" under the category grid if no events match
+            if (filteredEvents.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "No events found",
+                  style: TextStyle(
+                    color: AppColors.textSecondaryColor,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+
+            // List of events
             Expanded(
               child: ListView.builder(
-                itemCount: eventDocs.length,
+                itemCount: filteredEvents.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = filteredEvents[index];
                   String eventId = ds["ID"];
