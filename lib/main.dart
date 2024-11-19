@@ -3,6 +3,7 @@
 import 'package:activity_app/firebase_options.dart';
 import 'package:activity_app/pages/admin.dart';
 import 'package:activity_app/pages/authentication/login.dart';
+import 'package:activity_app/pages/carousel-test';
 import 'package:activity_app/pages/events/event_details.dart';
 import 'package:activity_app/pages/events/event_list.dart';
 import 'package:activity_app/pages/home.dart';
