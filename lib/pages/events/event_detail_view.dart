@@ -20,11 +20,11 @@ class EventDetailView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          eventName,
+          'Event Details', // Show "Event Details" as the app bar title
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 22,
-            color: AppColors.textPrimaryColor, // Primary text color for title
+            color: AppColors.textPrimaryColor,
           ),
         ),
         centerTitle: true,

@@ -2,10 +2,11 @@ import 'package:activity_app/pages/aboutUs.dart';
 import 'package:activity_app/pages/authentication/login.dart';
 import 'package:activity_app/pages/caldendar.dart';
 import 'package:activity_app/pages/colors.dart';
-import 'package:activity_app/pages/events/event_list.dart';
+import 'package:activity_app/pages/events/event_detail_view.dart';
 import 'package:activity_app/pages/favourite.dart';
 import 'package:activity_app/pages/feedback.dart';
 import 'package:activity_app/pages/profile.dart';
+import 'package:activity_app/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,20 +22,20 @@ class _HomePageState extends State<HomePage> {
   int notificationCount = 0;
   String? username;
   String? email;
-
-  final List<String> categories = [
-    'Sport',
-    'Conference',
-    'Workshop',
-    'Environment & Sustainable Activity',
-    'Club Activity',
-    'Social & Recreational Activity'
-  ];
-  final List<String> messages = [
-    "Message 1",
-    "Message 2",
-    "Message 3",
-    "Message 4"
+  Stream? EventStream;
+  List<bool> _favorites = [];
+  String? selectedCategory;
+  String searchQuery = "";
+  List<String> categories = [
+    'Academic',
+    'Sports & Recreation',
+    'Arts & Culture',
+    'Networking & Career',
+    'Community Outreach',
+    'Health & Wellness',
+    'Technology & Innovation',
+    'Sustainability',
+    'Social & Entertainment'
   ];
 
   @override
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _getUserData();
     _getFavoriteEventsCount();
+    getontheload();
   }
 
   void _getUserData() async {
@@ -114,6 +116,303 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
+  }
+
+  Future<void> getontheload() async {
+    try {
+      EventStream = await DatabaseMethods().getEventDetail();
+      setState(() {});
+    } catch (e) {
+      print("Error loading events: $e");
+    }
+  }
+
+  Future<String?> getCurrentUserId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user?.uid; // Return the user's unique ID
+  }
+
+  Future<void> toggleFavoriteStatus(String eventId, bool isFavorite) async {
+    String? userId = await getCurrentUserId();
+    if (userId != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'isFavourite.$eventId': isFavorite,
+      });
+    } else {
+      print("User ID is null. Cannot update favorite status.");
+    }
+  }
+
+  // Search bar widget
+  Widget buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: "Search events...",
+          prefixIcon: Icon(Icons.search, color: AppColors.primaryColor),
+          filled: true,
+          fillColor: AppColors.secondaryColor.withOpacity(0.2),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value.toLowerCase();
+          });
+        },
+      ),
+    );
+  }
+
+  Widget buildCategoryGrid() {
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      childAspectRatio: 2.5,
+      padding: EdgeInsets.all(10),
+      children: categories.map((category) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedCategory = selectedCategory == category ? null : category;
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: selectedCategory == category
+                  ? AppColors.secondaryColor.withOpacity(0.7)
+                  : AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: AppColors.primaryColor,
+                width: 1,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                category,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: selectedCategory == category
+                      ? AppColors.textSecondaryColor
+                      : AppColors.accentColor1,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // Carousel Slider Widget for the latest three events
+  Widget buildCarousel(List<DocumentSnapshot> eventDocs) {
+    // Get the latest three events
+    final latestThreeEvents = eventDocs.take(3).toList();
+
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 150,
+        autoPlay: true,
+        enlargeCenterPage: true,
+        aspectRatio: 2.0,
+        autoPlayInterval: Duration(seconds: 3),
+      ),
+      items: latestThreeEvents.map((ds) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    ds['Name'],
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  // Display all event details
+  Widget allEventDetail() {
+    return StreamBuilder(
+      stream: EventStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.accentColor1),
+          );
+        }
+        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
+          return Center(
+            child: Text(
+              "No events found",
+              style: TextStyle(
+                color: AppColors.textSecondaryColor,
+                fontSize: 18,
+              ),
+            ),
+          );
+        }
+
+        final eventDocs = snapshot.data.docs;
+
+        // Filter events based on search query and selected category
+        final filteredEvents = eventDocs.where((ds) {
+          final eventName = ds['Name'].toLowerCase();
+          final categoryMatch =
+              selectedCategory == null || ds['Category'] == selectedCategory;
+          final searchMatch =
+              searchQuery.isEmpty || eventName.contains(searchQuery);
+          return categoryMatch && searchMatch;
+        }).toList();
+
+        return Column(
+          children: [
+            buildSearchBar(), // Search bar
+            buildCarousel(eventDocs), // Carousel Slider
+            SizedBox(height: 10),
+            buildCategoryGrid(),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: eventDocs.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = filteredEvents[index];
+                  String eventId = ds["ID"];
+
+                  // Add the favorite status if not already in _favorites list
+                  if (_favorites.length <= index) {
+                    _favorites.add(false);
+                  }
+
+                  // Fetch the user's favorite data
+                  Future<void> fetchFavoriteStatus() async {
+                    String? userId = await getCurrentUserId();
+                    if (userId != null) {
+                      DocumentSnapshot userDoc = await FirebaseFirestore
+                          .instance
+                          .collection('users')
+                          .doc(userId)
+                          .get();
+
+                      if (userDoc.exists) {
+                        Map<String, dynamic> userData =
+                            userDoc.data() as Map<String, dynamic>;
+                        if (userData.containsKey('isFavourite')) {
+                          Map<String, dynamic> isFavourite =
+                              userData['isFavourite'];
+                          setState(() {
+                            _favorites[index] = isFavourite[eventId] ?? false;
+                          });
+                        }
+                      }
+                    }
+                  }
+
+                  fetchFavoriteStatus();
+
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the event detail page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EventDetailView(
+                            eventName: ds["Name"],
+                            eventDescription: ds["Description"],
+                            contactInfo: ds["Contact Info"],
+                            category: ds["Category"],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Material(
+                        elevation: 5,
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Event Name: " + ds["Name"],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _favorites[index]
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: AppColors.accentColor2,
+                                    ),
+                                    onPressed: () async {
+                                      setState(() {
+                                        _favorites[index] = !_favorites[index];
+                                      });
+                                      await toggleFavoriteStatus(
+                                          eventId, _favorites[index]);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Description: " + ds["Description"],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.textPrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -201,6 +500,12 @@ class _HomePageState extends State<HomePage> {
                       TextStyle(fontSize: 40.0, color: AppColors.primaryColor),
                 ),
               ),
+
+              // Add background color here
+              decoration: BoxDecoration(
+                color: AppColors
+                    .primaryColor, // Change this to any color you prefer
+              ),
             ),
             ListTile(
               title: Text("Profile",
@@ -250,89 +555,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SafeArea(
         child: Column(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: SizedBox(
-                height: 40.0,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon:
-                        Icon(Icons.search, color: AppColors.textSecondaryColor),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.secondaryColor, // Matching fill color
-                    contentPadding: EdgeInsets.only(top: 12.0),
-                  ),
-                ),
-              ),
-            ),
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 200,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                aspectRatio: 16 / 9,
-              ),
-              items: messages.map((message) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor, // Matching primary color
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      message,
-                      style: TextStyle(fontSize: 24, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 50),
-            Text(
-              'Select a Category:',
-              style: TextStyle(fontSize: 16, color: AppColors.textPrimaryColor),
-            ),
-            SizedBox(height: 20),
-            Wrap(
-              spacing: 10.0,
-              runSpacing: 10.0,
-              children: categories.map((category) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EventList()),
-                    );
-                  },
-                  child: Container(
-                    width: (MediaQuery.of(context).size.width / 3) - 15,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor, // Matching primary color
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      category,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+          children: [Expanded(child: allEventDetail())],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

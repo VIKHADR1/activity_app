@@ -2,7 +2,8 @@ import 'package:activity_app/pages/caldendar.dart';
 import 'package:activity_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:activity_app/pages/colors.dart'; // Ensure you import your colors file
+import 'package:activity_app/pages/colors.dart';
+import 'package:activity_app/pages/events/event_detail_view.dart'; // Import EventDetailView
 
 class Favourite extends StatefulWidget {
   final String userId;
@@ -16,6 +17,7 @@ class Favourite extends StatefulWidget {
 class _FavouriteState extends State<Favourite> {
   int _selectedIndex = 1;
 
+  // Fetch favorite events based on the user's favorite list in Firestore
   Future<List<Map<String, dynamic>>> fetchFavoriteEvents() async {
     if (widget.userId.isEmpty) {
       print("Error: userId is empty");
@@ -46,11 +48,13 @@ class _FavouriteState extends State<Favourite> {
 
             return eventDetails.docs
                 .map((doc) => {
+                      'ID': doc.data()['ID'],
                       'Name': doc.data()['Name'],
                       'Description': doc.data()['Description'],
                       'Contact Info': doc.data()['Contact Info'],
+                      'Category': doc.data()['Category'] ?? 'No Category',
                       'Image': doc.data()['Image'] ??
-                          'https://via.placeholder.com/150', // Add image URL if available
+                          'https://via.placeholder.com/150',
                     })
                 .toList();
           }
@@ -62,6 +66,7 @@ class _FavouriteState extends State<Favourite> {
     return [];
   }
 
+  // Handle bottom navigation bar item taps
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -88,7 +93,6 @@ class _FavouriteState extends State<Favourite> {
         backgroundColor: AppColors.primaryColor, // Use primary color
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        // Displaying favorite events
         future: fetchFavoriteEvents(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -119,7 +123,6 @@ class _FavouriteState extends State<Favourite> {
                   color: AppColors.secondaryColor, // Card background color
                   child: ListTile(
                     contentPadding: EdgeInsets.all(15),
-                    // Removed the leading image
                     title: Text(
                       event['Name'],
                       style: TextStyle(
@@ -141,13 +144,6 @@ class _FavouriteState extends State<Favourite> {
                               color: AppColors
                                   .textSecondaryColor), // Secondary text color
                         ),
-                        SizedBox(height: 5),
-                        Text(
-                          "Contact Info: ${event['Contact Info']}",
-                          style: TextStyle(
-                              color: AppColors
-                                  .accentColor2), // Accent color for contact info
-                        ),
                       ],
                     ),
                     trailing: Icon(
@@ -155,6 +151,20 @@ class _FavouriteState extends State<Favourite> {
                       color: AppColors
                           .accentColor2, // Accent color for favorite icon
                     ),
+                    // Navigate to EventDetailView on tap
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EventDetailView(
+                            eventName: event['Name'],
+                            eventDescription: event['Description'],
+                            contactInfo: event['Contact Info'],
+                            category: event['Category'],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
